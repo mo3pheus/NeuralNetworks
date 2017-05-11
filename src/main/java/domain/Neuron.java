@@ -5,19 +5,21 @@ package domain;
  */
 public class Neuron implements CanLearn {
     private int      index;
-    private double[] inputs;
+    private double[] inputVector;
+    private double   net;
     private double   bias;
+    private double   output;
 
     public Neuron(int index) {
         this.index = index;
     }
 
-    public double[] getInputs() {
-        return inputs;
+    public double[] getInputVector() {
+        return inputVector;
     }
 
-    public void setInputs(double[] inputs) {
-        this.inputs = inputs;
+    public void setInputVector(double[] inputVector) {
+        this.inputVector = inputVector;
     }
 
     public double getBias() {
@@ -37,16 +39,27 @@ public class Neuron implements CanLearn {
     }
 
     public double computeOutput(double net) {
-        return computeActivation(net);
+        output = computeActivation(net);
+        return output;
     }
 
     public double computeInput(double[][] weightMatrix) {
         double net = 0.0d;
         for (int i = 0; i < weightMatrix[0].length; i++) {
-            net += weightMatrix[index][i] * inputs[i];
+            net += weightMatrix[index][i] * inputVector[i];
         }
         net += bias;
 
+        this.net = net;
+
         return net;
+    }
+
+    public double getNet() {
+        return net;
+    }
+
+    public double getOutput() {
+        return output;
     }
 }
