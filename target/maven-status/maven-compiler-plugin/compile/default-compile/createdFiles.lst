@@ -1,3 +1,4 @@
-domain/CanLearn.class
 domain/Neuron.class
+domain/CanLearn.class
+driver/NNTest.class
 domain/NeuralNetwork.class

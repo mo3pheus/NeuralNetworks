@@ -31,7 +31,7 @@ public class Neuron implements CanLearn {
     }
 
     public double computeActivation(double net) {
-        return 1.0d / (1.0d - Math.exp(-1.0d * net));
+        return 1.0d / (1.0d + Math.exp(-1.0d * net));
     }
 
     public double computeActivationDerivative(double net) {
@@ -46,7 +46,7 @@ public class Neuron implements CanLearn {
     public double computeInput(double[][] weightMatrix) {
         double net = 0.0d;
         for (int i = 0; i < weightMatrix[0].length; i++) {
-            net += weightMatrix[index][i] * inputVector[i];
+            net += weightMatrix[i][index] * inputVector[i];
         }
         net += bias;
 

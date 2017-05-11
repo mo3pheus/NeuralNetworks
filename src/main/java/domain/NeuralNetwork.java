@@ -2,6 +2,7 @@ package domain;
 
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by sanketkorgaonkar on 5/10/17.
@@ -82,6 +83,70 @@ public class NeuralNetwork {
         sampleError = NeuralNetwork.computeError(outputVector, targetVector);
     }
 
+    public Properties getConfig() {
+        return config;
+    }
+
+    public int getNumInputNeurons() {
+        return numInputNeurons;
+    }
+
+    public int getNumHiddenNeurons() {
+        return numHiddenNeurons;
+    }
+
+    public int getNumOutputNeurons() {
+        return numOutputNeurons;
+    }
+
+    public float getIhBias() {
+        return ihBias;
+    }
+
+    public float getHoBias() {
+        return hoBias;
+    }
+
+    public float getLearningRate() {
+        return learningRate;
+    }
+
+    public double getTermError() {
+        return termError;
+    }
+
+    public Neuron[] getHiddenNeurons() {
+        return hiddenNeurons;
+    }
+
+    public Neuron[] getOutputNeurons() {
+        return outputNeurons;
+    }
+
+    public double[][] getWeightsIH() {
+        return weightsIH;
+    }
+
+    public double[][] getWeightsHO() {
+        return weightsHO;
+    }
+
+    public double[] getInputVector() {
+        return inputVector;
+    }
+
+    public double[] getOutputVector() {
+        return outputVector;
+    }
+
+    public double[] getTargetVector() {
+        return targetVector;
+    }
+
+    public double getSampleError() {
+        return sampleError;
+    }
+
     private void initializeNeurons() {
         for (int i = 0; i < numHiddenNeurons; i++) {
             hiddenNeurons[i] = new Neuron(i);
@@ -95,7 +160,17 @@ public class NeuralNetwork {
     }
 
     private void initializeWeightMatrices() {
+        for (int i = 0; i < numInputNeurons; i++) {
+            for (int j = 0; j < numHiddenNeurons; j++) {
+                weightsIH[i][j] = ThreadLocalRandom.current().nextDouble(0.0d, 1.0d);
+            }
+        }
 
+        for (int i = 0; i < numHiddenNeurons; i++) {
+            for (int j = 0; j < numOutputNeurons; j++) {
+                weightsHO[i][j] = ThreadLocalRandom.current().nextDouble(0.0d, 1.0d);
+            }
+        }
     }
 
     private static double computeError(double[] outputVector, double[] targetVector) throws Exception {
