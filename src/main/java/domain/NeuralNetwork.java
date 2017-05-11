@@ -9,24 +9,26 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class NeuralNetwork {
     /* Network variables */
-    private Properties config           = null;
     private int        numInputNeurons  = 0;
     private int        numHiddenNeurons = 0;
     private int        numOutputNeurons = 0;
-    private float      ihBias           = 0.0f;
-    private float      hoBias           = 0.0f;
-    private float      learningRate     = 0.0f;
+    private double     ihBias           = 0.0d;
+    private double     hoBias           = 0.0d;
+    private double     learningRate     = 0.0d;
     private double     termError        = 0.0d;
+    private double     cumulativeError  = Double.MAX_VALUE;
+    private Properties config           = null;
     private Neuron[]   hiddenNeurons    = null;
     private Neuron[]   outputNeurons    = null;
     private double[][] weightsIH        = null;
     private double[][] weightsHO        = null;
 
     /* Sample variables */
-    private double[] inputVector  = null;
-    private double[] outputVector = null;
-    private double[] targetVector = null;
-    private double   sampleError  = 0.0d;
+    private double[] inputVector         = null;
+    private double[] outputVector        = null;
+    private double[] targetVector        = null;
+    private double   sampleError         = Double.MAX_VALUE;
+    private int      numSamplesProcessed = 0;
 
     public NeuralNetwork(Properties config) {
         this.config = config;
@@ -34,9 +36,9 @@ public class NeuralNetwork {
         this.numInputNeurons = Integer.parseInt(this.config.getProperty("neural.networks.number.input.neurons"));
         this.numHiddenNeurons = Integer.parseInt(this.config.getProperty("neural.networks.number.hidden.neurons"));
         this.numOutputNeurons = Integer.parseInt(this.config.getProperty("neural.networks.number.output.neurons"));
-        this.ihBias = Float.parseFloat(this.config.getProperty("neural.networks.ih.bias"));
-        this.hoBias = Float.parseFloat(this.config.getProperty("neural.networks.ho.bias"));
-        this.learningRate = Float.parseFloat(this.config.getProperty("neural.networks.learning.rate"));
+        this.ihBias = Double.parseDouble(this.config.getProperty("neural.networks.ih.bias"));
+        this.hoBias = Double.parseDouble(this.config.getProperty("neural.networks.ho.bias"));
+        this.learningRate = Double.parseDouble(this.config.getProperty("neural.networks.learning.rate"));
         this.termError = Double.parseDouble(this.config.getProperty("neural.networks.termination.error"));
 
         hiddenNeurons = new Neuron[numHiddenNeurons];
@@ -81,10 +83,62 @@ public class NeuralNetwork {
 
         /* Compute the sample error */
         sampleError = NeuralNetwork.computeError(outputVector, targetVector);
+        cumulativeError = (numSamplesProcessed == 0) ? sampleError : (cumulativeError + sampleError);
+        numSamplesProcessed++;
+    }
+
+    public void processSample(double[] inpVector, double[] opVector) throws Exception {
+        this.inputVector = inpVector;
+        this.targetVector = opVector;
+
+        double[] opHiddenNeurons = new double[numHiddenNeurons];
+        Arrays.fill(opHiddenNeurons, 0.0d);
+
+        /* Feed the hidden neurons */
+        for (int i = 0; i < numHiddenNeurons; i++) {
+            hiddenNeurons[i].setInputVector(inputVector);
+            hiddenNeurons[i].computeInput(weightsIH);
+            opHiddenNeurons[i] = hiddenNeurons[i].computeOutput(hiddenNeurons[i].getNet());
+        }
+
+        /* Feed the output neurons */
+        for (int i = 0; i < numOutputNeurons; i++) {
+            outputNeurons[i].setInputVector(opHiddenNeurons);
+            outputNeurons[i].computeInput(weightsHO);
+            outputVector[i] = outputNeurons[i].computeOutput(outputNeurons[i].getNet());
+        }
+
+        /* Compute the sample error */
+        sampleError = NeuralNetwork.computeError(outputVector, targetVector);
+        cumulativeError = (numSamplesProcessed == 0) ? sampleError : (cumulativeError + sampleError);
+        numSamplesProcessed++;
+    }
+
+    public void adjustWeights() {
+        double[][] deltaWHO = computeDeltaWHO();
+        double[][] deltaWIH = computeDeltaWIH();
+
+        /* Adjust who weights */
+        for (int i = 0; i < numHiddenNeurons; i++) {
+            for (int j = 0; j < numOutputNeurons; j++) {
+                weightsHO[i][j] -= (learningRate * deltaWHO[i][j]);
+            }
+        }
+
+        /* Adjust wih weights */
+        for (int i = 0; i < numInputNeurons; i++) {
+            for (int j = 0; j < numHiddenNeurons; j++) {
+                weightsIH[i][j] -= (learningRate * deltaWIH[i][j]);
+            }
+        }
     }
 
     public Properties getConfig() {
         return config;
+    }
+
+    public double getCumulativeError() {
+        return cumulativeError;
     }
 
     public int getNumInputNeurons() {
@@ -99,15 +153,15 @@ public class NeuralNetwork {
         return numOutputNeurons;
     }
 
-    public float getIhBias() {
+    public double getIhBias() {
         return ihBias;
     }
 
-    public float getHoBias() {
+    public double getHoBias() {
         return hoBias;
     }
 
-    public float getLearningRate() {
+    public double getLearningRate() {
         return learningRate;
     }
 
@@ -145,6 +199,44 @@ public class NeuralNetwork {
 
     public double getSampleError() {
         return sampleError;
+    }
+
+    public void resetNetworkParams(){
+        numSamplesProcessed = 0;
+        //cumulativeError = Double.MAX_VALUE;
+        sampleError = Double.MAX_VALUE;
+    }
+
+    private double[][] computeDeltaWHO() {
+        double[][] deltaWHO = new double[numHiddenNeurons][numOutputNeurons];
+
+        for (int i = 0; i < numHiddenNeurons; i++) {
+            for (int j = 0; j < numOutputNeurons; j++) {
+                deltaWHO[i][j] = (outputVector[j] - targetVector[j]) * outputNeurons[j].computeActivationDerivative
+                        (outputNeurons[j].getNet())
+                        * hiddenNeurons[i].getOutput();
+            }
+        }
+
+        return deltaWHO;
+    }
+
+    private double[][] computeDeltaWIH() {
+        double[][] deltaWIH = new double[numInputNeurons][numHiddenNeurons];
+
+        for (int i = 0; i < numInputNeurons; i++) {
+            for (int j = 0; j < numHiddenNeurons; j++) {
+                double d_Etotal_OHj = 0.0d;
+                for (int k = 0; k < numOutputNeurons; k++) {
+                    d_Etotal_OHj += ((outputNeurons[k].getOutput() - targetVector[k]) * outputNeurons[k]
+                            .computeActivationDerivative(outputNeurons[k].getNet()) * weightsHO[j][k]);
+                }
+                deltaWIH[i][j] = d_Etotal_OHj * hiddenNeurons[j].computeActivationDerivative(hiddenNeurons[j].getNet
+                        ()) * inputVector[i];
+            }
+        }
+
+        return deltaWIH;
     }
 
     private void initializeNeurons() {
