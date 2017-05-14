@@ -39,10 +39,10 @@ public class NNTest {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                System.out.println("========================================================");
-                System.out.println("Cumulative Error = " + ann.getCumulativeError());
-                ann.resetNetworkParams();
             }
+            System.out.println("========================================================");
+            System.out.println("Cumulative Error = " + ann.getCumulativeError());
+            ann.resetNetworkParams();
         }
     }
 
