@@ -129,6 +129,7 @@ public class NeuralNetwork {
             for (int j = 0; j < numOutputNeurons; j++) {
                 weightsHO[i][j] -= (learningRate * deltaWHO[i][j]);
                 weightsHO[i][j] += (momentum * deltaWeightsHO[i][j]);
+                deltaWeightsHO[i][j] = (momentum * deltaWeightsHO[i][j]) - (learningRate * deltaWHO[i][j]);
             }
         }
 
@@ -137,12 +138,9 @@ public class NeuralNetwork {
             for (int j = 0; j < numHiddenNeurons; j++) {
                 weightsIH[i][j] -= (learningRate * deltaWIH[i][j]);
                 weightsIH[i][j] += (momentum * deltaWeightsIH[i][j]);
+                deltaWeightsIH[i][j] = (momentum * deltaWeightsIH[i][j]) - (learningRate * deltaWIH[i][j]);
             }
         }
-
-        /* Save off deltas */
-        deltaWeightsHO = deltaWHO.clone();
-        deltaWeightsIH = deltaWIH.clone();
     }
 
     public Properties getConfig() {
@@ -215,8 +213,8 @@ public class NeuralNetwork {
 
     public void resetNetworkParams() {
         numSamplesProcessed = 0;
-        //cumulativeError = Double.MAX_VALUE;
-        sampleError = Double.MAX_VALUE;
+        cumulativeError = Double.MAX_VALUE;
+        //sampleError = Double.MAX_VALUE;
     }
 
     private double[][] computeDeltaWHO() {
@@ -266,14 +264,14 @@ public class NeuralNetwork {
     private void initializeWeightMatrices() {
         for (int i = 0; i < numInputNeurons; i++) {
             for (int j = 0; j < numHiddenNeurons; j++) {
-                weightsIH[i][j] = ThreadLocalRandom.current().nextDouble(0.0d, 1.0d);
+                weightsIH[i][j] = ThreadLocalRandom.current().nextDouble(-1.0d, 1.0d);
                 deltaWeightsIH[i][j] = 0.0d;
             }
         }
 
         for (int i = 0; i < numHiddenNeurons; i++) {
             for (int j = 0; j < numOutputNeurons; j++) {
-                weightsHO[i][j] = ThreadLocalRandom.current().nextDouble(0.0d, 1.0d);
+                weightsHO[i][j] = ThreadLocalRandom.current().nextDouble(-1.0d, 1.0d);
                 deltaWeightsHO[i][j] = 0.0d;
             }
         }

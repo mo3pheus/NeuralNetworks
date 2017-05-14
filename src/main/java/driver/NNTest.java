@@ -25,17 +25,23 @@ public class NNTest {
         System.out.println(Arrays.toString(ann.getWeightsHO()[0]));
         System.out.println(Arrays.toString(ann.getWeightsHO()[1]));
 
+        String[] exOrProblem = {"0.0d,0.0d,0.0d", "0.0d,1.0d,1.0d", "1.0d,0.0d,1.0d", "1.0d,1.0d,0.0d"};
+
         boolean cont = true;
-        while(cont || ann.getSampleError() > ann.getTermError()) {
+        while (cont || ann.getSampleError() > ann.getTermError()) {
             cont = false;
-            try {
-                ann.processSample("2,2,4,0");
-                ann.adjustWeights();
-                //System.out.println("targetVector = " + Arrays.toString(ann.getTargetVector()));
-               // System.out.println("outputVector = " + Arrays.toString(ann.getOutputVector()));
-                System.out.println("Cumulative Error = " + ann.getSampleError() );
-            } catch (Exception e) {
-                e.printStackTrace();
+            for (String sample : exOrProblem) {
+                try {
+                    ann.processSample(sample);
+                    ann.adjustWeights();
+                    //System.out.println("targetVector = " + Arrays.toString(ann.getTargetVector()));
+                    // System.out.println("outputVector = " + Arrays.toString(ann.getOutputVector()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.out.println("========================================================");
+                System.out.println("Cumulative Error = " + ann.getCumulativeError());
+                ann.resetNetworkParams();
             }
         }
     }
