@@ -1,6 +1,7 @@
 engineering/NeuralNetworkEngine.class
-domain/CanLearn.class
 domain/Neuron.class
+domain/CanLearn.class
 driver/NNTest.class
+Utils/DataConversionUtil.class
 test/LearningRateTest.class
 domain/NeuralNetwork.class

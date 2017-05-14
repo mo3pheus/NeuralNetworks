@@ -1,6 +1,0 @@
-engineering/NeuralNetworkEngine.class
-domain/CanLearn.class
-domain/Neuron.class
-driver/NNTest.class
-test/LearningRateTest.class
-domain/NeuralNetwork.class

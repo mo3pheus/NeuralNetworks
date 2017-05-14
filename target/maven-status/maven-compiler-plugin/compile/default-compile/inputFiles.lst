@@ -1,6 +1,7 @@
-/Users/sanketkorgaonkar/Documents/workspace/NN/src/main/java/test/LearningRateTest.java
-/Users/sanketkorgaonkar/Documents/workspace/NN/src/main/java/driver/NNTest.java
-/Users/sanketkorgaonkar/Documents/workspace/NN/src/main/java/domain/NeuralNetwork.java
-/Users/sanketkorgaonkar/Documents/workspace/NN/src/main/java/engineering/NeuralNetworkEngine.java
-/Users/sanketkorgaonkar/Documents/workspace/NN/src/main/java/domain/CanLearn.java
-/Users/sanketkorgaonkar/Documents/workspace/NN/src/main/java/domain/Neuron.java
+/home/sanket/Documents/Code/MyProjects/Java/MavenProjects/neuralNetworks/NeuralNetworks/src/main/java/Utils/DataConversionUtil.java
+/home/sanket/Documents/Code/MyProjects/Java/MavenProjects/neuralNetworks/NeuralNetworks/src/main/java/domain/CanLearn.java
+/home/sanket/Documents/Code/MyProjects/Java/MavenProjects/neuralNetworks/NeuralNetworks/src/main/java/driver/NNTest.java
+/home/sanket/Documents/Code/MyProjects/Java/MavenProjects/neuralNetworks/NeuralNetworks/src/main/java/engineering/NeuralNetworkEngine.java
+/home/sanket/Documents/Code/MyProjects/Java/MavenProjects/neuralNetworks/NeuralNetworks/src/main/java/test/LearningRateTest.java
+/home/sanket/Documents/Code/MyProjects/Java/MavenProjects/neuralNetworks/NeuralNetworks/src/main/java/domain/NeuralNetwork.java
+/home/sanket/Documents/Code/MyProjects/Java/MavenProjects/neuralNetworks/NeuralNetworks/src/main/java/domain/Neuron.java
